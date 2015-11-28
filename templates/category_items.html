@@ -5,7 +5,9 @@
         <h3>Categories</h3>
         <ul class="nav nav-pills nav-stacked">
             {% for category in categories %}
-            <li role="presentation" style="font-size: large;"><a href="#">{{ category.name }}</a></li>
+            <li role="presentation" style="font-size: large;">
+                <a href="{{ url_for('category_items',category = category.name) }}">{{ category.name }}</a>
+            </li>
             {% endfor %}
         </ul>
     </div>
