@@ -28,12 +28,23 @@ def index():
 
 
 # Page shows items in a category
-@app.route('/<category>/items')
+@app.route('/catalog/<category>/items')
 def category_items(category):
     try:
         category_item = session.query(Category).filter_by(name=category).one()
         items = session.query(Item).filter_by(category=category_item)
         return render_template('category_items.html', categories=get_all_categories(), items=items, curr_cat=category)
+    except NoResultFound:
+        return redirect(url_for('index'))
+
+
+# Gives description of the given item
+@app.route('/catalog/<category>/<item>')
+def item_description(category, item):
+    try:
+        category_item = session.query(Category).filter_by(name=category).one()
+        item_content = session.query(Item).filter_by(category=category_item, title=item).one()
+        return render_template('item_description.html', item=item, description=item_content.description)
     except NoResultFound:
         return redirect(url_for('index'))
 
