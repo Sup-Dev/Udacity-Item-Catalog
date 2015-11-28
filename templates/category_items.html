@@ -16,7 +16,7 @@
         </ul>
     </div>
     <div class="col-md-6" style="border-left: solid black;">
-        <h3>Latest Items</h3>
+        <h3>{{ curr_cat }} Items ({{ items.count() }} items)</h3>
         <ul class="list-group">
             {% for item in items %}
             <li class="list-group-item" style="color: orangered;font-size: large;">{{ item.title }} <em style="color: slategrey;">({{ item.category.name }})</em></li>
