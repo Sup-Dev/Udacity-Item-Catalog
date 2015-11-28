@@ -15,7 +15,11 @@
         <h3>Latest Items</h3>
         <ul class="list-group">
             {% for item in items %}
-            <li class="list-group-item" style="color: orangered;font-size: large;">{{ item.title }} <em style="color: slategrey;">({{ item.category.name }})</em></li>
+            <li class="list-group-item">
+                <a class="item-anchor" href="{{ url_for('item_description',category = item.category.name, item = item.title) }}">
+                    {{ item.title }} <em style="color: slategrey;">({{ item.category.name }})</em>
+                </a>
+            </li>
             {% endfor %}
         </ul>
     </div>
