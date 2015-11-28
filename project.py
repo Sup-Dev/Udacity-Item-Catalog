@@ -3,7 +3,7 @@ __author__ = 'Sourabh Dev'
 from flask import Flask, render_template, request, redirect, url_for
 from flask import sessions, jsonify, flash
 
-from sqlalchemy import create_engine, asc
+from sqlalchemy import create_engine, asc, desc
 from sqlalchemy.orm import sessionmaker
 
 from database_setup import Base, Category, Item
@@ -22,7 +22,8 @@ session = DBSession()
 # Home Page for the application
 @app.route('/')
 def index():
-    return render_template('index.html', categories=get_all_categories())
+    items = session.query(Item).order_by(desc(Item.created_date))
+    return render_template('index.html', categories=get_all_categories(), items=items)
 
 
 # Helper functions
