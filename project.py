@@ -31,9 +31,9 @@ def index():
 @app.route('/<category>/items')
 def category_items(category):
     try:
-        category = session.query(Category).filter_by(name=category).one()
-        items = session.query(Item).filter_by(category=category)
-        return render_template('category_items.html', categories=get_all_categories(), items=items)
+        category_item = session.query(Category).filter_by(name=category).one()
+        items = session.query(Item).filter_by(category=category_item)
+        return render_template('category_items.html', categories=get_all_categories(), items=items, curr_cat=category)
     except NoResultFound:
         return redirect(url_for('index'))
 

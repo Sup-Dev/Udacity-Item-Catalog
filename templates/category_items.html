@@ -5,9 +5,13 @@
         <h3>Categories</h3>
         <ul class="nav nav-pills nav-stacked">
             {% for category in categories %}
-            <li role="presentation" style="font-size: large;">
-                <a href="{{ url_for('category_items',category = category.name) }}">{{ category.name }}</a>
-            </li>
+                {% if curr_cat == category.name %}
+                    <li role="presentation" class="active" style="font-size: large;">
+                {% else %}
+                    <li role="presentation" style="font-size: large;">
+                {% endif %}
+                    <a href="{{ url_for('category_items',category = category.name) }}">{{ category.name }}</a>
+                </li>
             {% endfor %}
         </ul>
     </div>
