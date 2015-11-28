@@ -14,6 +14,16 @@
         .jumbotron {
             padding:70px 30px 70px 30px;
             margin:70px auto;
+            background-color: lightslategray;
+        }
+
+        .main-container {
+            padding: 20px;
+            background-color: ivory;
+        }
+
+        body {
+            background-color: lightslategray;
         }
     </style>
 </head>
@@ -33,8 +43,8 @@
     </nav>
 
     <header class="jumbotron">
-        <div class="container">
-            <div class="col-md-3">
+        <div class="container main-container">
+            <div class="col-md-3" style="border-right: solid black;">
                 <ul class="nav nav-pills nav-stacked">
                     {% for category in categories %}
                     <li role="presentation"><a href="#">{{ category.name }}</a></li>
