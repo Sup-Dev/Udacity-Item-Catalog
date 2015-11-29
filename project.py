@@ -49,6 +49,17 @@ def item_description(category, item):
         return redirect(url_for('index'))
 
 
+# Edit menu item
+@app.route('/catalog/<item_id>/edit')
+def item_edit(item_id):
+    try:
+        categories = session.query(Category).all()
+        item = session.query(Item).filter_by(id=item_id).one()
+        return render_template('item_edit.html', item=item, categories=categories)
+    except NoResultFound:
+        return redirect(url_for('index'))
+
+
 # Helper functions
 def get_all_categories():
     categories = session.query(Category).order_by(asc(Category.name))
