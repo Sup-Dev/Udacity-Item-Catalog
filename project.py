@@ -50,12 +50,21 @@ def item_description(category, item):
 
 
 # Edit menu item
-@app.route('/catalog/<item_id>/edit')
+@app.route('/catalog/<item_id>/edit', methods=['GET', 'POST'])
 def item_edit(item_id):
     try:
-        categories = session.query(Category).all()
         item = session.query(Item).filter_by(id=item_id).one()
-        return render_template('item_edit.html', item=item, categories=categories)
+        if request.method == 'POST':
+            #flash("Item Edited")
+            item.title = request.form['title']
+            item.description = request.form['description']
+            item_category = session.query(Category).filter_by(name=request.form['category']).one()
+            item.category = item_category
+            session.commit()
+            return redirect(url_for('index'))
+        else:
+            categories = session.query(Category).all()
+            return render_template('item_edit.html', item=item, categories=categories)
     except NoResultFound:
         return redirect(url_for('index'))
 
