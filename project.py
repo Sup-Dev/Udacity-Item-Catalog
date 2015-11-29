@@ -69,6 +69,22 @@ def item_edit(item_id):
         return redirect(url_for('index'))
 
 
+# Delete menu item
+@app.route('/catalog/<item_id>/delete', methods=['GET', 'POST'])
+def item_delete(item_id):
+    try:
+        item = session.query(Item).filter_by(id=item_id).one()
+        if request.method == 'POST':
+            #flash("Item Deleted")
+            session.delete(item)
+            session.commit()
+            return redirect(url_for('index'))
+        else:
+            return render_template('item_delete.html', item=item)
+    except NoResultFound:
+        return redirect(url_for('index'))
+
+
 # Helper functions
 def get_all_categories():
     categories = session.query(Category).order_by(asc(Category.name))
