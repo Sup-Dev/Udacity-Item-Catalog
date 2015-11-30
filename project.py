@@ -49,6 +49,22 @@ def item_description(category, item):
         return redirect(url_for('index'))
 
 
+# Add menu item
+@app.route('/catalog/new', methods=['GET', 'POST'])
+def item_new():
+    try:
+        if request.method == 'POST':
+            category = session.query(Category).filter_by(name=request.form['category']).one()
+            item = Item(title=request.form['title'], description=request.form['description'], category=category)
+            session.add(item)
+            return redirect(url_for('index'))
+        else:
+            categories = session.query(Category).all()
+            return render_template('item_add.html', categories=categories)
+    except NoResultFound:
+        return redirect(url_for('index'))
+
+
 # Edit menu item
 @app.route('/catalog/<item_id>/edit', methods=['GET', 'POST'])
 def item_edit(item_id):
