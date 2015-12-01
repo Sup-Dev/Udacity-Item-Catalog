@@ -1,7 +1,10 @@
 __author__ = 'Sourabh Dev'
 
+import random
+import string
+
 from flask import Flask, render_template, request, redirect, url_for
-from flask import sessions, jsonify, flash
+from flask import sessions, jsonify, flash, session as login_session
 
 from sqlalchemy import create_engine, asc, desc
 from sqlalchemy.orm import sessionmaker
@@ -18,6 +21,15 @@ Base.metadata.bind = engine
 
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
+
+
+# Login Page with oauth
+@app.route('/login')
+def user_login():
+    state = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(32))
+    login_session['state'] = state
+    # return "The current session state is %s" % login_session['state']
+    return render_template('login.html', STATE=state)
 
 
 # Home Page for the application
@@ -108,5 +120,6 @@ def get_all_categories():
 
 
 if __name__ == '__main__':
+    app.secret_key = 'this_key_is_secret'
     app.debug = True
     app.run(host='0.0.0.0', port=5000)
