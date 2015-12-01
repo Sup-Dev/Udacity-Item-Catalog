@@ -141,3 +141,5 @@ target/
 # Created by .ignore support plugin (hsz.mobi)
 
 *.db
+*.db-journal
+client_secrets.json
