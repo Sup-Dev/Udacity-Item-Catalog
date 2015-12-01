@@ -2,7 +2,18 @@ __author__ = 'dev'
 
 from flask import session
 
-from database_setup import User
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
+from database_setup import Base, User
+
+
+# Connect to Database and create database session
+engine = create_engine('sqlite:///itemcatalog.db')
+Base.metadata.bind = engine
+
+DBSession = sessionmaker(bind=engine)
+session = DBSession()
 
 
 def create_user(login_session):
