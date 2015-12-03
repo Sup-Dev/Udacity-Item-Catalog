@@ -182,8 +182,9 @@ def item_description(category, item):
     try:
         category_item = session.query(Category).filter_by(name=category).one()
         item_content = session.query(Item).filter_by(category=category_item, title=item).one()
+        print(item_content.picture, type(item_content.picture))
         return render_template('item_description.html', item=item, description=item_content.description,
-                               item_id=item_content.id, login_state=user_logged_in())
+                               item_id=item_content.id, picture=item_content.picture, login_state=user_logged_in())
     except NoResultFound:
         return redirect(url_for('index'))
 
@@ -197,12 +198,19 @@ def item_new():
     try:
         if request.method == 'POST' and request.form['title'] != "":
             image = request.files['image']
+            image_filename = None
             if allowed_file(image.filename):
                 image.save(os.path.join(app.config['UPLOAD_FOLDER'], image.filename))
+                image_filename = image.filename
 
             category = session.query(Category).filter_by(name=request.form['category']).one()
-            item = Item(title=request.form['title'], description=request.form['description'], category=category)
+            if image_filename is None:
+                item = Item(title=request.form['title'], description=request.form['description'], category=category)
+            else:
+                item = Item(title=request.form['title'], description=request.form['description'], category=category,
+                            picture=image_filename)
             session.add(item)
+            session.commit()
             return redirect(url_for('index'))
         else:
             categories = session.query(Category).all()

@@ -27,7 +27,7 @@ category1 = Category(name="Football")
 session.add(category1)
 session.commit()
 
-item1 = Item(title="Football", description="A black and white ball", category=category1)
+item1 = Item(title="Football", description="A black and white ball", category=category1, picture='football.jpg')
 
 session.add(item1)
 session.commit()
@@ -39,17 +39,19 @@ category2 = Category(name="Cricket")
 session.add(category2)
 session.commit()
 
-item1 = Item(title="Bat", description="A wooden bat to strike the ball with", category=category2)
+item1 = Item(title="Bat", description="A wooden bat to strike the ball with", category=category2,
+             picture='cricket_bat.jpg')
 
 session.add(item1)
 session.commit()
 
-item2 = Item(title="Ball", description="A red coloured ball made of cork", category=category2)
+item2 = Item(title="Ball", description="A red coloured ball made of cork", category=category2,
+             picture='cricket_ball.jpg')
 
 session.add(item2)
 session.commit()
 
-item3 = Item(title="Wicket", description="A wicket made out of wood", category=category2)
+item3 = Item(title="Wicket", description="A wicket made out of wood", category=category2, picture='cricket_wicket.jpg')
 
 session.add(item3)
 session.commit()

@@ -31,6 +31,7 @@ class Item(Base):
     id = Column(Integer, primary_key=True)
     title = Column(String(80), nullable=False)
     description = Column(String(500))
+    picture = Column(String(250))
     created_date = Column(DateTime(timezone=True), default=func.now())
     category_id = Column(Integer, ForeignKey('category.id'))
     category = relationship(Category)
