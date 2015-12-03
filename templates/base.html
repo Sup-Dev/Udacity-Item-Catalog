@@ -41,9 +41,15 @@
 
             </div>
             <div class="nav navbar-nav navbar-right">
+                {% if login_state %}
+                <li style="cursor: pointer;">
+                    <a href="{{ url_for('gdisconnect') }}"> Logout</a>
+                </li>
+                {% else %}
                 <li style="cursor: pointer;">
                     <a href="{{ url_for('user_login') }}"> Login</a>
                 </li>
+                {% endif %}
             </div>
         </div>
     </nav>

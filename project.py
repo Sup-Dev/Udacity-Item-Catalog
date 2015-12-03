@@ -127,11 +127,39 @@ def gconnect():
     return output
 
 
+@app.route('/gdisconnect')
+def gdisconnect():
+        # Only disconnect a connected user.
+    access_token = login_session.get('access_token')
+    if access_token is None:
+        response = make_response(json.dumps('Current user not connected.'), 401)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+    url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % access_token
+    h = httplib2.Http()
+    result = h.request(url, 'GET')[0]
+    if result['status'] == '200':
+        # Reset the user's sesson.
+        del login_session['access_token']
+        del login_session['gplus_id']
+        del login_session['username']
+        del login_session['email']
+        del login_session['picture']
+
+        return redirect(url_for('index'))
+    else:
+        # For whatever reason, the given token was invalid.
+        response = make_response(
+            json.dumps('Failed to revoke token for given user.', 400))
+        response.headers['Content-Type'] = 'application/json'
+        return response
+
+
 # Home Page for the application
 @app.route('/')
 def index():
     items = session.query(Item).order_by(desc(Item.created_date))
-    return render_template('index.html', categories=get_all_categories(), items=items)
+    return render_template('index.html', categories=get_all_categories(), items=items, login_state=user_logged_in())
 
 
 # Page shows items in a category
@@ -140,7 +168,8 @@ def category_items(category):
     try:
         category_item = session.query(Category).filter_by(name=category).one()
         items = session.query(Item).filter_by(category=category_item)
-        return render_template('category_items.html', categories=get_all_categories(), items=items, curr_cat=category)
+        return render_template('category_items.html', categories=get_all_categories(), items=items, curr_cat=category,
+                               login_state=user_logged_in())
     except NoResultFound:
         return redirect(url_for('index'))
 
@@ -151,7 +180,8 @@ def item_description(category, item):
     try:
         category_item = session.query(Category).filter_by(name=category).one()
         item_content = session.query(Item).filter_by(category=category_item, title=item).one()
-        return render_template('item_description.html', item=item, description=item_content.description)
+        return render_template('item_description.html', item=item, description=item_content.description,
+                               login_state=user_logged_in())
     except NoResultFound:
         return redirect(url_for('index'))
 
@@ -159,6 +189,9 @@ def item_description(category, item):
 # Add menu item
 @app.route('/catalog/new', methods=['GET', 'POST'])
 def item_new():
+    if 'username' not in login_session:
+        return redirect('/login')
+
     try:
         if request.method == 'POST':
             category = session.query(Category).filter_by(name=request.form['category']).one()
@@ -167,7 +200,7 @@ def item_new():
             return redirect(url_for('index'))
         else:
             categories = session.query(Category).all()
-            return render_template('item_add.html', categories=categories)
+            return render_template('item_add.html', categories=categories, login_state=user_logged_in())
     except NoResultFound:
         return redirect(url_for('index'))
 
@@ -175,6 +208,9 @@ def item_new():
 # Edit menu item
 @app.route('/catalog/<item_id>/edit', methods=['GET', 'POST'])
 def item_edit(item_id):
+    if 'username' not in login_session:
+        return redirect('/login')
+
     try:
         item = session.query(Item).filter_by(id=item_id).one()
         if request.method == 'POST':
@@ -187,7 +223,7 @@ def item_edit(item_id):
             return redirect(url_for('index'))
         else:
             categories = session.query(Category).all()
-            return render_template('item_edit.html', item=item, categories=categories)
+            return render_template('item_edit.html', item=item, categories=categories, login_state=user_logged_in())
     except NoResultFound:
         return redirect(url_for('index'))
 
@@ -195,6 +231,9 @@ def item_edit(item_id):
 # Delete menu item
 @app.route('/catalog/<item_id>/delete', methods=['GET', 'POST'])
 def item_delete(item_id):
+    if 'username' not in login_session:
+        return redirect('/login')
+
     try:
         item = session.query(Item).filter_by(id=item_id).one()
         if request.method == 'POST':
@@ -203,7 +242,7 @@ def item_delete(item_id):
             session.commit()
             return redirect(url_for('index'))
         else:
-            return render_template('item_delete.html', item=item)
+            return render_template('item_delete.html', item=item, login_state=user_logged_in())
     except NoResultFound:
         return redirect(url_for('index'))
 
@@ -212,6 +251,12 @@ def item_delete(item_id):
 def get_all_categories():
     categories = session.query(Category).order_by(asc(Category.name))
     return categories
+
+
+def user_logged_in():
+    if 'username' not in login_session:
+        return False
+    return True
 
 
 if __name__ == '__main__':
