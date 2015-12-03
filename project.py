@@ -5,11 +5,12 @@ import string
 import httplib2
 import json
 import requests
+import os
 
 from flask import Flask, render_template, request, redirect, url_for, make_response
-from flask import sessions, jsonify, flash, session as login_session
+from flask import jsonify, flash, session as login_session
 
-from sqlalchemy import create_engine, asc, desc
+from sqlalchemy import create_engine, desc
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.exc import NoResultFound
 
@@ -17,8 +18,9 @@ from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
 
 from database_setup import Base, Category, Item
-from helper import get_user_id, create_user
+from helper import get_user_id, create_user, get_all_categories, user_logged_in, allowed_file
 
+UPLOAD_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static/images/')
 
 app = Flask(__name__)
 CLIENT_ID = json.loads(open('client_secrets.json', 'r').read())['web']['client_id']
@@ -193,7 +195,11 @@ def item_new():
         return redirect('/login')
 
     try:
-        if request.method == 'POST':
+        if request.method == 'POST' and request.form['title'] != "":
+            image = request.files['image']
+            if allowed_file(image.filename):
+                image.save(os.path.join(app.config['UPLOAD_FOLDER'], image.filename))
+
             category = session.query(Category).filter_by(name=request.form['category']).one()
             item = Item(title=request.form['title'], description=request.form['description'], category=category)
             session.add(item)
@@ -248,18 +254,9 @@ def item_delete(item_id):
 
 
 # Helper functions
-def get_all_categories():
-    categories = session.query(Category).order_by(asc(Category.name))
-    return categories
-
-
-def user_logged_in():
-    if 'username' not in login_session:
-        return False
-    return True
-
 
 if __name__ == '__main__':
     app.secret_key = 'this_key_is_secret'
+    app.config['UPLOAD_FOLDER'] = UPLOAD_PATH
     app.debug = True
     app.run(host='0.0.0.0', port=5000)

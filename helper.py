@@ -1,11 +1,13 @@
 __author__ = 'dev'
 
-from flask import session
+from flask import session as login_session
 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, asc
 from sqlalchemy.orm import sessionmaker
 
-from database_setup import Base, User
+from database_setup import Base, User, Category
+
+ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 
 
 # Connect to Database and create database session
@@ -35,3 +37,18 @@ def get_user_id(email):
         return user.id
     except:
         return None
+
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
+
+
+def get_all_categories():
+    categories = session.query(Category).order_by(asc(Category.name))
+    return categories
+
+
+def user_logged_in():
+    if 'username' not in login_session:
+        return False
+    return True
