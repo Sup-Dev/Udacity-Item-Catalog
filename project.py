@@ -182,7 +182,6 @@ def item_description(category, item):
     try:
         category_item = session.query(Category).filter_by(name=category).one()
         item_content = session.query(Item).filter_by(category=category_item, title=item).one()
-        print(item_content.picture, type(item_content.picture))
         return render_template('item_description.html', item=item, description=item_content.description,
                                item_id=item_content.id, picture=item_content.picture, login_state=user_logged_in())
     except NoResultFound:
@@ -233,6 +232,13 @@ def item_edit(item_id):
             item.description = request.form['description']
             item_category = session.query(Category).filter_by(name=request.form['category']).one()
             item.category = item_category
+
+            image = request.files['image']
+            if allowed_file(image.filename):
+                os.remove(os.path.join(app.config['UPLOAD_FOLDER'], item.picture))
+                image.save(os.path.join(app.config['UPLOAD_FOLDER'], image.filename))
+                item.picture = image.filename
+
             session.commit()
             return redirect(url_for('index'))
         else:
