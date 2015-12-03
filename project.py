@@ -260,6 +260,7 @@ def item_delete(item_id):
             #flash("Item Deleted")
             session.delete(item)
             session.commit()
+            os.remove(os.path.join(app.config['UPLOAD_FOLDER'], item.picture))
             return redirect(url_for('index'))
         else:
             return render_template('item_delete.html', item=item, login_state=user_logged_in())
