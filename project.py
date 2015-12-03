@@ -181,7 +181,7 @@ def item_description(category, item):
         category_item = session.query(Category).filter_by(name=category).one()
         item_content = session.query(Item).filter_by(category=category_item, title=item).one()
         return render_template('item_description.html', item=item, description=item_content.description,
-                               login_state=user_logged_in())
+                               item_id=item_content.id, login_state=user_logged_in())
     except NoResultFound:
         return redirect(url_for('index'))
 
