@@ -1,4 +1,6 @@
 __author__ = 'dev'
+import random
+import string
 
 from flask import session as login_session
 
@@ -52,3 +54,9 @@ def user_logged_in():
     if 'username' not in login_session:
         return False
     return True
+
+
+def generate_csrf_token():
+    if 'csrf_token' not in session:
+        session['csrf_token'] = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(32))
+    return session['csrf_token']

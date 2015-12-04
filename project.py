@@ -8,7 +8,7 @@ import requests
 import os
 
 from flask import Flask, render_template, request, redirect, url_for, make_response
-from flask import jsonify, flash, session as login_session
+from flask import abort, flash, session as login_session
 
 from sqlalchemy import create_engine, desc
 from sqlalchemy.orm import sessionmaker
@@ -18,7 +18,7 @@ from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
 
 from database_setup import Base, Category, Item
-from helper import get_user_id, create_user, get_all_categories, user_logged_in, allowed_file
+from helper import get_user_id, create_user, get_all_categories, user_logged_in, allowed_file, generate_csrf_token
 
 UPLOAD_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static/images/')
 
@@ -257,11 +257,15 @@ def item_delete(item_id):
     try:
         item = session.query(Item).filter_by(id=item_id).one()
         if request.method == 'POST':
+            token = session.pop('csrf_token', None)
+            if not token or token != request.form.get('csrf_token'):
+                abort(403)
             #flash("Item Deleted")
-            session.delete(item)
-            session.commit()
-            os.remove(os.path.join(app.config['UPLOAD_FOLDER'], item.picture))
-            return redirect(url_for('index'))
+            else:
+                session.delete(item)
+                session.commit()
+                os.remove(os.path.join(app.config['UPLOAD_FOLDER'], item.picture))
+                return redirect(url_for('index'))
         else:
             return render_template('item_delete.html', item=item, login_state=user_logged_in())
     except NoResultFound:
@@ -274,4 +278,5 @@ if __name__ == '__main__':
     app.secret_key = 'this_key_is_secret'
     app.config['UPLOAD_FOLDER'] = UPLOAD_PATH
     app.debug = True
+    app.jinja_env.globals['csrf_token'] = generate_csrf_token
     app.run(host='0.0.0.0', port=5000)
