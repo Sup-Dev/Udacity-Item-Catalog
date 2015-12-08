@@ -8,7 +8,7 @@ import requests
 import os
 
 from flask import Flask, render_template, request, redirect, url_for, make_response
-from flask import abort, flash, session as login_session
+from flask import jsonify, abort, flash, session as login_session
 
 from sqlalchemy import create_engine, desc
 from sqlalchemy.orm import sessionmaker
@@ -31,6 +31,19 @@ Base.metadata.bind = engine
 
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
+
+
+#Making an API Endpoint (GET Request)
+@app.route('/catalog.json')
+def catalog_json():
+    categories = session.query(Category).all()
+    batchs = [i.serialize for i in categories]
+
+    for b in range(len(batchs)):
+        item = [i.serialize for i in session.query(Item).filter_by(category_id=batchs[b]['id']).all()]
+        batchs[b]['item'] = item
+
+    return jsonify(Category=batchs)
 
 
 # Login Page with oauth
