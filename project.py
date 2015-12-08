@@ -6,6 +6,7 @@ import httplib2
 import json
 import requests
 import os
+import dicttoxml
 
 from flask import Flask, render_template, request, redirect, url_for, make_response
 from flask import jsonify, abort, flash, session as login_session
@@ -44,6 +45,21 @@ def catalog_json():
         batchs[b]['item'] = item
 
     return jsonify(Category=batchs)
+
+
+@app.route('/catalog.xml')
+def catalog_xml():
+    categories = session.query(Category).all()
+    batchs = [i.serialize for i in categories]
+
+    for b in range(len(batchs)):
+        item = [i.serialize for i in session.query(Item).filter_by(category_id=batchs[b]['id']).all()]
+        batchs[b]['item'] = item
+
+    response = make_response(dicttoxml.dicttoxml({'Category': batchs}))
+    response.headers['Content-Type'] = 'application/xml'
+
+    return response
 
 
 # Login Page with oauth
