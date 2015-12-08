@@ -34,7 +34,7 @@ DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
 
-#Making an API Endpoint (GET Request)
+# Category JSON API Endpoint (GET Request)
 @app.route('/catalog.json')
 def catalog_json():
     categories = session.query(Category).all()
@@ -47,6 +47,7 @@ def catalog_json():
     return jsonify(Category=batchs)
 
 
+# Category XML API Endpoint (GET Request)
 @app.route('/catalog.xml')
 def catalog_xml():
     categories = session.query(Category).all()
@@ -71,6 +72,7 @@ def user_login():
     return render_template('login.html', STATE=state)
 
 
+# google oauth connect
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
     # Validate state token
@@ -157,7 +159,7 @@ def gconnect():
     flash("you are now logged in as %s" % login_session['username'])
     return output
 
-
+# google oauth disconnect
 @app.route('/gdisconnect')
 def gdisconnect():
         # Only disconnect a connected user.
@@ -256,7 +258,6 @@ def item_edit(item_id):
     try:
         item = session.query(Item).filter_by(id=item_id).one()
         if request.method == 'POST':
-            #flash("Item Edited")
             item.title = request.form['title']
             item.description = request.form['description']
             item_category = session.query(Category).filter_by(name=request.form['category']).one()
@@ -286,10 +287,11 @@ def item_delete(item_id):
     try:
         item = session.query(Item).filter_by(id=item_id).one()
         if request.method == 'POST':
+
+            # test for csrf validity
             token = login_session.pop('csrf_token', None)
             if not token or token != request.form.get('csrf_token'):
                 abort(403)
-            #flash("Item Deleted")
             else:
                 session.delete(item)
                 session.commit()
