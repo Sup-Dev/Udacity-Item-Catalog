@@ -57,6 +57,6 @@ def user_logged_in():
 
 
 def generate_csrf_token():
-    if 'csrf_token' not in session:
-        session['csrf_token'] = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(32))
-    return session['csrf_token']
+    if 'csrf_token' not in login_session:
+        login_session['csrf_token'] = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(32))
+    return login_session['csrf_token']

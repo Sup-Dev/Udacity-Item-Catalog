@@ -257,7 +257,7 @@ def item_delete(item_id):
     try:
         item = session.query(Item).filter_by(id=item_id).one()
         if request.method == 'POST':
-            token = session.pop('csrf_token', None)
+            token = login_session.pop('csrf_token', None)
             if not token or token != request.form.get('csrf_token'):
                 abort(403)
             #flash("Item Deleted")
