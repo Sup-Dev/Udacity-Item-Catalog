@@ -1,6 +1,6 @@
 __author__ = 'Sourabh Dev'
 
-from .project import *
+from project import *
 
 
 if __name__ == '__main__':
