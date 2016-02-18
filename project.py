@@ -310,4 +310,4 @@ if __name__ == '__main__':
     app.config['UPLOAD_FOLDER'] = UPLOAD_PATH
     app.debug = True
     app.jinja_env.globals['csrf_token'] = generate_csrf_token
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0')
