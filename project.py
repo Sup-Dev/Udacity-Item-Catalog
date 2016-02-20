@@ -24,7 +24,7 @@ from helper import get_user_id, create_user, get_all_categories, user_logged_in,
 UPLOAD_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static/images/')
 
 app = Flask(__name__)
-CLIENT_ID = json.loads(open('client_secrets.json', 'r').read())['web']['client_id']
+CLIENT_ID = json.loads(open('/var/www/catalog/catalog/client_secrets.json', 'r').read())['web']['client_id']
 
 # Connect to Database and create database session
 engine = create_engine('postgresql://catalog:catalog@localhost/catalog')
@@ -86,7 +86,7 @@ def gconnect():
 
     try:
         # Upgrade the authorization code into a credentials object
-        oauth_flow = flow_from_clientsecrets('client_secrets.json', scope='')
+        oauth_flow = flow_from_clientsecrets('/var/www/catalog/catalog/client_secrets.json', scope='')
         oauth_flow.redirect_uri = 'postmessage'
         credentials = oauth_flow.step2_exchange(code)
     except FlowExchangeError:
