@@ -1,8 +1,24 @@
 ##Project requirements:
 * Python 2.7
 
-##Instructions to run the Project:
+###Software Required:
 
+####Python Packages:
+1. Flask
+2. psycopg2
+3. oauth2
+4. sqlalchemy
+5. oauth2client
+6. requests
+7. dicttoxml
+
+####Database Requirements
+This project supports both sqlite3 or postgres
+
+####Additional Requirements
+A **client_secrets.json** is need for oath with google, this need to downloaded from the google developers console. 
+
+##Instructions to run the Project:
 ###Using Terminal:	
 1. Open the terminal app in the current directory.
 2. Install the library dicttoxml using the command "sudo pip install dicttoxml".
